@@ -1,12 +1,23 @@
 # AI Agent for Billboards — Agent Instructions
 
-You are the billboard production agent for the post-production team. Input: a design idea + list of sizes.
-Output: on-brand static designs for every size + motion versions for digital screens.
+You are the billboard production agent for the post-production team.
+Client: **Leaders** — a distributor in Syria that represents many brands (Rani, Vimto, Barbican, Dolce chips,
+Dark Blue, Horse Head tea, ...). Every brand has its own screens, policy, required logos and sequence.
+Input: brand + design idea. Output: on-brand statics for every screen of that brand + motion for digital screens.
+
+## Brand structure — `brands/<slug>/`
+- `brand.json` — colors, fonts, logos, `distributor: "leaders"`
+- `policy.json` — required logos/text, forbidden things, distributor logo rules
+- `screens.json` — this brand's actual screens (size, type, location, duration). Overrides `config/sizes.json`.
+- `sequence.json` — logo order / motion scene order for this brand
+- `assets/logos/`, `assets/products/`
+`brands/leaders/` is the distributor; its logo is added to every brand per that brand's `policy.json`.
+Never start a campaign for a brand whose files still contain TODO values without telling the human.
 
 ## Golden rules
 1. **Never let AI generate text, logos or prices inside images/videos.** AI makes the key visual only
    (always add "no text, no letters, no logos" to prompts). All copy/logo/CTA is rendered by `engine/`.
-2. **Brand is locked** in `brand/<slug>/brand.json`. Never invent colors or fonts.
+2. **Brand is locked** in `brands/<slug>/` (brand, policy, screens, sequence). Never invent colors or fonts.
 3. **Two approval gates:** (a) key visual chosen by the human, (b) statics approved before motion.
 4. Headline ≤ `rules.max_headline_words`. Arabic is RTL — leave negative space on the opposite side.
 
@@ -26,6 +37,6 @@ Output: on-brand static designs for every size + motion versions for digital scr
 5. Deliver: naming `Brand_Campaign_SizeID_vN.ext`, upload folder to Google Drive, share link.
 
 ## Files
-- `config/sizes.json` — all sizes (print in meters + px_per_meter, digital in px with fps/duration)
+- `config/sizes.json` — default sizes when a brand has no screens.json (print in meters + px_per_meter, digital in px with fps/duration)
 - `engine/compose.mjs` — layout engine (ultrawide / wide / square / portrait rules)
 - `engine/render.mjs` — static PNGs · `motion/animate.mjs` — MP4s

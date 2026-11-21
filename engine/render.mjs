@@ -8,8 +8,10 @@ import { ROOT, loadJSON, loadBrand, resolveSize, composeHTML } from './compose.m
 
 const MAX_VIEWPORT = 2400; // render big sizes at a smaller CSS viewport, upscale via deviceScaleFactor
 
-export function pickSizes(brief, cli) {
-  const cfg = loadJSON('config/sizes.json');
+// Sizes come from the brand's own screens (brands/<slug>/screens.json), else config/sizes.json.
+export function pickSizes(brief, cli, brand) {
+  const cfg = brand?.screens || loadJSON('config/sizes.json');
+  cfg.print_px_per_meter ??= 600;
   const wanted = cli || (brief.sizes && brief.sizes !== 'all' ? brief.sizes : null);
   let sizes = cfg.sizes;
   if (wanted) {
@@ -31,7 +33,7 @@ async function main() {
   const si = rest.indexOf('--sizes');
   const brief = loadJSON(briefPath);
   const brand = loadBrand(brief.brand);
-  const sizes = pickSizes(brief, si >= 0 ? rest[si + 1] : null);
+  const sizes = pickSizes(brief, si >= 0 ? rest[si + 1] : null, brand);
   const out = outDir(brief);
   const version = brief.version || 'v1';
 
@@ -44,7 +46,7 @@ async function main() {
     const page = await browser.newPage({ viewport: { width: vw, height: vh }, deviceScaleFactor: dpr });
     await page.setContent(html, { waitUntil: 'load' });
     await page.evaluate(() => document.fonts.ready);
-    const file = path.join(out, `${brand.name}_${brief.campaign}_${s.id}_${version}.png`);
+    const file = path.join(out, `${brand.name.replace(/\s+/g, "")}_${brief.campaign}_${s.id}_${version}.png`);
     await page.screenshot({ path: file, clip: { x: 0, y: 0, width: vw, height: vh } });
     fs.writeFileSync(file.replace(/\.png$/, '.html'), html);
     await page.close();

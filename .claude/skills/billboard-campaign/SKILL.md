@@ -4,7 +4,7 @@ description: Produce a full billboard campaign (key visual, all sizes, motion) f
 ---
 Follow the pipeline in CLAUDE.md exactly.
 
-1. Collect the brief: brand slug, campaign name, headline, subline, CTA, idea/mood, sizes (or "all").
+1. Collect the brief: brand slug (folder in `brands/`; read its policy.json, screens.json, sequence.json first), campaign name, headline, subline, CTA, idea/mood, sizes (or "all").
    Write it to `briefs/<campaign>.json` (copy `briefs/example.json`).
 2. Generate 3 key-visual options with Higgsfield (prompt from the idea + "empty negative space on the
    right for Arabic text, no text, no letters, no logos"). Ask the human to pick one. STOP until they pick.

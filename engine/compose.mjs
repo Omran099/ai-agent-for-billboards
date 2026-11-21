@@ -9,10 +9,22 @@ export function loadJSON(p) {
   return JSON.parse(fs.readFileSync(path.resolve(ROOT, p), 'utf8'));
 }
 
-export function loadBrand(slug) {
-  const dir = path.join(ROOT, 'brand', slug);
+const readIf = (p, fallback = null) => (fs.existsSync(p) ? JSON.parse(fs.readFileSync(p, 'utf8')) : fallback);
+
+// Loads brands/<slug>/ : brand.json (+ policy.json, screens.json, sequence.json if present).
+// If brand.distributor is set (e.g. "leaders"), the distributor brand is attached as brand.distributorBrand.
+export function loadBrand(slug, { withDistributor = true } = {}) {
+  const dir = path.join(ROOT, 'brands', slug);
+  if (!fs.existsSync(path.join(dir, 'brand.json'))) throw new Error(`Unknown brand "${slug}" — no brands/${slug}/brand.json`);
   const brand = JSON.parse(fs.readFileSync(path.join(dir, 'brand.json'), 'utf8'));
+  brand.slug = slug;
   brand.dir = dir;
+  brand.policy = readIf(path.join(dir, 'policy.json'), {});
+  brand.screens = readIf(path.join(dir, 'screens.json'));
+  brand.sequence = readIf(path.join(dir, 'sequence.json'));
+  if (withDistributor && brand.distributor && brand.distributor !== slug) {
+    brand.distributorBrand = loadBrand(brand.distributor, { withDistributor: false });
+  }
   return brand;
 }
 
@@ -43,11 +55,11 @@ const UNICODE_RANGES = {
 };
 
 function fontFaces(brand) {
-  const fdir = path.join(brand.dir, 'assets', 'fonts');
-  if (!fs.existsSync(fdir)) return '';
-  return fs.readdirSync(fdir)
-    .filter((f) => /\.(woff2?|ttf|otf)$/.test(f))
-    .map((f) => {
+  // shared fonts in /assets/fonts + brand-specific fonts in brands/<slug>/assets/fonts
+  const dirs = [path.join(ROOT, 'assets', 'fonts'), path.join(brand.dir, 'assets', 'fonts')].filter((d) => fs.existsSync(d));
+  return dirs.flatMap((fdir) => fs.readdirSync(fdir).map((f) => [fdir, f]))
+    .map(([fdir, f]) => [fdir, f]).filter(([, f]) => /\.(woff2?|ttf|otf)$/.test(f))
+    .map(([fdir, f]) => {
       const m = f.match(/^([a-z]+)-([a-z]+)-(\d{3})-normal/i);
       if (!m) return '';
       const family = m[1][0].toUpperCase() + m[1].slice(1);
@@ -57,11 +69,24 @@ function fontFaces(brand) {
     .join('\n');
 }
 
+function logoImg(b, cls) {
+  const p = b.logo_on_dark || b.logo;
+  const abs = p && path.join(b.dir, p);
+  if (abs && fs.existsSync(abs)) return `<img class="${cls}" src="${fileUrl(abs)}">`;
+  return `<div class="${cls} wordmark">${esc(b.wordmark || b.name)}</div>`;
+}
+
 function logoHTML(brand) {
-  const p = brand.logo_on_dark || brand.logo;
-  const abs = p && path.join(brand.dir, p);
-  if (abs && fs.existsSync(abs)) return `<img class="logo" src="${fileUrl(abs)}">`;
-  return `<div class="logo wordmark">${esc(brand.wordmark || brand.name)}</div>`;
+  return logoImg(brand, 'logo');
+}
+
+// Distributor (e.g. Leaders) logo, required by policy.distributor_logo.
+function distributorHTML(brand) {
+  const d = brand.distributorBrand;
+  const rule = brand.policy?.distributor_logo;
+  if (!d || rule?.required === false) return '';
+  const label = rule?.label ? `<span class="dlabel">${esc(rule.label)}</span>` : '';
+  return `<div class="dist">${label}${logoImg(d, 'dlogo')}</div>`;
 }
 
 /**
@@ -108,7 +133,7 @@ export function composeHTML({ brand, brief, W, H, vw, animate = false, transpare
     ultrawide: `top:0;bottom:0;${side}:${m}u;width:${scale.copyW};justify-content:center;`,
     wide: `top:0;bottom:0;${side}:${m}u;width:${scale.copyW};justify-content:center;`,
     square: `left:${m}u;right:${m}u;bottom:${m}u;`,
-    portrait: `left:${m}u;right:${m}u;bottom:${m * 1.6}u;align-items:center;text-align:center;`,
+    portrait: `left:${m}u;right:${m}u;bottom:${m * 2.6}u;align-items:center;text-align:center;`,
   }[layout];
   const logoPos = {
     ultrawide: `top:${m}u;${rtl ? 'left' : 'right'}:${m}u;`,
@@ -133,6 +158,10 @@ h1 .w{display:inline-block}
 .sub{font-family:'${brand.fonts.body.family}';font-weight:${brand.fonts.body.weight};font-size:${scale.s * u}px;line-height:1.35;color:${c.text_on_dark};opacity:.92}
 .cta{align-self:${layout === 'portrait' ? 'center' : 'flex-start'};margin-top:${1.5 * u}px;font-family:'${brand.fonts.cta.family}';font-weight:${brand.fonts.cta.weight};font-size:${scale.cta * u}px;background:${c.cta_bg};color:${c.cta_text};padding:${1.4 * u}px ${4 * u}px;border-radius:${1.2 * u}px}
 .logo{position:absolute;${logoPos.replace(/(\d+(?:\.\d+)?)u/g, (_, n) => n * u + 'px')}height:${R.logo_height_u * u}px}
+.dist{position:absolute;bottom:${m * 0.8 * u}px;${layout === 'portrait' ? 'left:50%;transform:translateX(-50%);' : `${rtl ? 'left' : 'right'}:${m * u}px;`}display:flex;align-items:center;gap:${1.2 * u}px;direction:ltr}
+.dlogo{height:${(brand.policy?.distributor_logo?.height_u || R.logo_height_u * 0.55) * u}px;position:static}
+.dist .wordmark{font-size:${(brand.policy?.distributor_logo?.height_u || R.logo_height_u * 0.55) * 0.7 * u}px;line-height:1}
+.dlabel{font-family:'${brand.fonts.body.family}';font-size:${2.4 * u}px;color:${c.text_on_dark};opacity:.85}
 .wordmark{font-family:'Cairo';font-weight:900;font-size:${R.logo_height_u * 0.75 * u}px;line-height:${R.logo_height_u * u}px;letter-spacing:.08em;color:${c.secondary};direction:ltr}
 ${animate ? motionCSS({ duration, ease, zoom, u, layout }) : ''}
 `;
@@ -141,7 +170,7 @@ ${animate ? motionCSS({ duration, ease, zoom, u, layout }) : ''}
   const html = `<!doctype html><html lang="${rtl ? 'ar' : 'en'}"><head><meta charset="utf-8"><style>${css}</style></head>
 <body><div class="stage">${bgHTML}<div class="scrim"></div>
 <div class="copy"><h1>${words}</h1>${brief.subline ? `<p class="sub">${esc(brief.subline)}</p>` : ''}${brief.cta ? `<div class="cta">${esc(brief.cta)}</div>` : ''}</div>
-${logoHTML(brand)}</div></body></html>`;
+${logoHTML(brand)}${distributorHTML(brand)}</div></body></html>`;
   return { html, vw, vh, layout };
 }
 
@@ -162,6 +191,7 @@ h1 .w{animation:rise .7s ${ease} calc(.6s + var(--i) * .12s) both}
 .sub{animation:fade .8s ${ease} 1.8s both}
 .cta{animation:pop .6s ${ease} 2.6s both}
 .logo{animation:logoIn 1s ${ease} 0.3s both${layout === 'portrait' ? ';transform:translateX(-50%)' : ''}}
+.dist{animation:fade .8s ${ease} 3.2s both}
 .copy{animation:out .5s ease-in ${duration - 0.5}s both}
 `;
 }

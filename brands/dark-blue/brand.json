@@ -1,0 +1,13 @@
+{
+  "_note": "TODO: كل القيم مؤقتة. منعبّيها من فولدر Leaders Billboards/Dark Blue (اللوغوهات، الألوان، الخطوط).",
+  "name": "Dark Blue",
+  "wordmark": "DARK BLUE",
+  "distributor": "leaders",
+  "logo": "assets/logos/logo.png",
+  "logo_on_dark": "assets/logos/logo-white.png",
+  "products_dir": "assets/products",
+  "colors": { "primary": "#06122B", "secondary": "#1E6BFF", "text_on_dark": "#FFFFFF", "text_on_light": "#06122B", "cta_bg": "#1E6BFF", "cta_text": "#FFFFFF" },
+  "fonts": { "headline": { "family": "Cairo", "weight": 900 }, "body": { "family": "Tajawal", "weight": 500 }, "cta": { "family": "Cairo", "weight": 800 } },
+  "rules": { "logo_height_u": 11, "safe_margin_u": 6, "max_headline_words": 7, "scrim_strength": 0.7 },
+  "motion": { "style": "TODO", "easing": "cubic-bezier(.2,.8,.2,1)", "ken_burns_zoom": 1.08 }
+}

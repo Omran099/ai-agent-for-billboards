@@ -27,7 +27,7 @@ async function renderOne(browser, { brand, brief, s, out, version }) {
   await page.evaluate(() => document.fonts.ready);
   await page.evaluate(() => document.getAnimations().forEach((a) => a.pause()));
 
-  const file = path.join(out, `${brand.name}_${brief.campaign}_${s.id}_${version}.mp4`);
+  const file = path.join(out, `${brand.name.replace(/\s+/g, "")}_${brief.campaign}_${s.id}_${version}.mp4`);
   const [fx, fy] = brief.focal_point || [0.5, 0.5];
   const args = ['-y', '-loglevel', 'error'];
   if (video) {
@@ -65,7 +65,7 @@ async function main() {
   const si = rest.indexOf('--sizes');
   const brief = loadJSON(briefPath);
   const brand = loadBrand(brief.brand);
-  let sizes = pickSizes(brief, si >= 0 ? rest[si + 1] : null);
+  let sizes = pickSizes(brief, si >= 0 ? rest[si + 1] : null, brand);
   if (!rest.includes('--print')) sizes = sizes.filter((s) => s.type === 'digital'); // print boards are static
   const out = outDir(brief);
   const browser = await chromium.launch();

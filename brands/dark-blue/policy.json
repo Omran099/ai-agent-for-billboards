@@ -1,0 +1,9 @@
+{
+  "_note": "TODO: بوليسي دارك بلو الحقيقية. هاي البنية بس.",
+  "required_logos": ["brand", "distributor"],
+  "distributor_logo": { "required": true, "label": "Distributed by", "height_u": 6, "position": "bottom-opposite" },
+  "required_text": [],
+  "forbidden": ["AI-generated text or logos", "altered logo colors", "logo smaller than rules.logo_height_u"],
+  "product_shot_required": true,
+  "min_duration_s": null
+}

@@ -1,0 +1,5 @@
+{
+  "_note": "TODO: التسلسل الخاص بدارك بلو (ترتيب اللوغوهات / المشاهد). بانتظار شرح من التيم.",
+  "logo_order": ["brand", "distributor"],
+  "motion_scenes": ["key_visual", "headline", "product", "cta", "logos"]
+}

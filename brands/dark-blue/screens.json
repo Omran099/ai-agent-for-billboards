@@ -1,0 +1,9 @@
+{
+  "_note": "TODO: شاشات دارك بلو الحقيقية (القياس، المكان، النوع). هاي أمثلة مؤقتة.",
+  "print_px_per_meter": 600,
+  "sizes": [
+    { "id": "BB_12x4m",      "type": "print",   "width_m": 12, "height_m": 4, "location": "TODO", "label": "Billboard 12x4m" },
+    { "id": "LED_1920x1080", "type": "digital", "width_px": 1920, "height_px": 1080, "fps": 25, "duration_s": 10, "location": "TODO", "label": "LED Landscape" },
+    { "id": "LED_1080x1920", "type": "digital", "width_px": 1080, "height_px": 1920, "fps": 25, "duration_s": 10, "location": "TODO", "label": "LED Portrait" }
+  ]
+}
