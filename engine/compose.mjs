@@ -109,6 +109,9 @@ export function composeHTML({ brand, brief, W, H, vw, animate = false, transpare
   const rtl = (brief.direction || 'rtl') === 'rtl';
   const [fx, fy] = brief.focal_point || [0.5, 0.5];
   const visual = brief.visual ? path.resolve(ROOT, brief.visual) : null;
+  const productRel = brief.product || null;
+  const product = productRel ? [path.resolve(brand.dir, productRel), path.resolve(ROOT, productRel)].find((p) => fs.existsSync(p)) : null;
+  if (productRel && !product) throw new Error(`product not found: ${productRel}`);
   const ease = brand.motion?.easing || 'ease-out';
   const zoom = brand.motion?.ken_burns_zoom || 1.08;
 
@@ -117,10 +120,11 @@ export function composeHTML({ brand, brief, W, H, vw, animate = false, transpare
     ultrawide: { h: 15, s: 6.2, cta: 5.6, copyW: '46%' },
     wide: { h: 11, s: 4.6, cta: 4.4, copyW: '52%' },
     square: { h: 12, s: 5.2, cta: 5, copyW: '100%' },
-    portrait: { h: 15, s: 6.4, cta: 6.2, copyW: '100%' },
+    portrait: { h: 12.5, s: 5.6, cta: 5.6, copyW: '100%' },
   }[layout];
 
   const side = rtl ? 'right' : 'left';
+  const far = rtl ? 'left' : 'right';
   const scrim = {
     ultrawide: `linear-gradient(to ${rtl ? 'left' : 'right'}, ${hexA(c.primary, R.scrim_strength)} 0%, ${hexA(c.primary, R.scrim_strength * 0.6)} 40%, transparent 70%)`,
     wide: `linear-gradient(to ${rtl ? 'left' : 'right'}, ${hexA(c.primary, R.scrim_strength)} 0%, ${hexA(c.primary, R.scrim_strength * 0.5)} 45%, transparent 75%)`,
@@ -132,12 +136,21 @@ export function composeHTML({ brand, brief, W, H, vw, animate = false, transpare
   const copyPos = {
     ultrawide: `top:0;bottom:0;${side}:${m}u;width:${scale.copyW};justify-content:center;`,
     wide: `top:0;bottom:0;${side}:${m}u;width:${scale.copyW};justify-content:center;`,
-    square: `left:${m}u;right:${m}u;bottom:${m}u;`,
+    square: product ? `${side}:${m}u;width:52%;bottom:${m * 2}u;` : `left:${m}u;right:${m}u;bottom:${m}u;`,
     portrait: `left:${m}u;right:${m}u;bottom:${m * 2.6}u;align-items:center;text-align:center;`,
   }[layout];
+  // product (can / pack shot) placement, opposite the copy
+  const prodPos = {
+    ultrawide: `bottom:${vh * 0.06}px;height:${vh * 0.86}px;${far}:${vw * 0.16}px;`,
+    wide: `bottom:${vh * 0.06}px;height:${vh * 0.84}px;${far}:${vw * 0.12}px;`,
+    square: `bottom:${vh * 0.08}px;height:${vh * 0.7}px;${far}:${vw * 0.08}px;`,
+    portrait: `top:${vh * 0.15}px;height:${vh * 0.36}px;left:0;right:0;display:flex;justify-content:center;`,
+  }[layout];
+  const distSide = product && layout !== 'portrait' ? side : far;
+  const logoSide = product ? side : far;
   const logoPos = {
-    ultrawide: `top:${m}u;${rtl ? 'left' : 'right'}:${m}u;`,
-    wide: `top:${m}u;${rtl ? 'left' : 'right'}:${m}u;`,
+    ultrawide: `top:${m}u;${logoSide}:${m}u;`,
+    wide: `top:${m}u;${logoSide}:${m}u;`,
     square: `top:${m}u;${side}:${m}u;`,
     portrait: `top:${m * 1.4}u;left:50%;transform:translateX(-50%);`,
   }[layout];
@@ -152,31 +165,37 @@ html,body{width:${vw}px;height:${vh}px;overflow:hidden;background:${transparentB
 .bg{position:absolute;inset:0;${visual ? '' : `background:radial-gradient(120% 120% at ${fx * 100}% ${fy * 100}%, ${c.secondary} 0%, ${c.primary} 55%, #000 120%);`}}
 .bg img{width:100%;height:100%;object-fit:cover;object-position:${fx * 100}% ${fy * 100}%;transform-origin:${fx * 100}% ${fy * 100}%}
 .scrim{position:absolute;inset:0;background:${scrim}}
+.pattern{position:absolute;inset:0;opacity:${brand.pattern?.opacity ?? 0.22}}
+.pattern svg{width:100%;height:100%}
+.product{position:absolute;${prodPos}}
+.product img{height:100%;width:auto;display:block;filter:drop-shadow(0 ${2 * u}px ${4 * u}px rgba(0,0,0,.55))${c.glow ? ` drop-shadow(0 0 ${6 * u}px ${hexA(c.glow, 0.45)})` : ''}}
 .copy{position:absolute;display:flex;flex-direction:column;gap:${2.2 * u}px;${copyPos.replace(/(\d+(?:\.\d+)?)u/g, (_, n) => n * u + 'px')}}
 h1{font-family:'${brand.fonts.headline.family}';font-weight:${brand.fonts.headline.weight};font-size:${scale.h * u}px;line-height:1.15;color:${c.text_on_dark};text-wrap:balance}
 h1 .w{display:inline-block}
 .sub{font-family:'${brand.fonts.body.family}';font-weight:${brand.fonts.body.weight};font-size:${scale.s * u}px;line-height:1.35;color:${c.text_on_dark};opacity:.92}
 .cta{align-self:${layout === 'portrait' ? 'center' : 'flex-start'};margin-top:${1.5 * u}px;font-family:'${brand.fonts.cta.family}';font-weight:${brand.fonts.cta.weight};font-size:${scale.cta * u}px;background:${c.cta_bg};color:${c.cta_text};padding:${1.4 * u}px ${4 * u}px;border-radius:${1.2 * u}px}
 .logo{position:absolute;${logoPos.replace(/(\d+(?:\.\d+)?)u/g, (_, n) => n * u + 'px')}height:${R.logo_height_u * u}px}
-.dist{position:absolute;bottom:${m * 0.8 * u}px;${layout === 'portrait' ? 'left:50%;transform:translateX(-50%);' : `${rtl ? 'left' : 'right'}:${m * u}px;`}display:flex;align-items:center;gap:${1.2 * u}px;direction:ltr}
+.dist{position:absolute;bottom:${m * 0.8 * u}px;${layout === 'portrait' ? 'left:50%;transform:translateX(-50%);' : `${distSide}:${m * u}px;`}display:flex;align-items:center;gap:${1.2 * u}px;direction:ltr}
 .dlogo{height:${(brand.policy?.distributor_logo?.height_u || R.logo_height_u * 0.55) * u}px;position:static}
 .dist .wordmark{font-size:${(brand.policy?.distributor_logo?.height_u || R.logo_height_u * 0.55) * 0.7 * u}px;line-height:1}
 .dlabel{font-family:'${brand.fonts.body.family}';font-size:${2.4 * u}px;color:${c.text_on_dark};opacity:.85}
 .wordmark{font-family:'Cairo';font-weight:900;font-size:${R.logo_height_u * 0.75 * u}px;line-height:${R.logo_height_u * u}px;letter-spacing:.08em;color:${c.secondary};direction:ltr}
-${animate ? motionCSS({ duration, ease, zoom, u, layout }) : ''}
+${animate ? motionCSS({ duration, ease, zoom, u, layout, preset: brand.motion?.preset, rtl }) : ''}
 `;
 
   const bgHTML = transparentBg ? '' : `<div class="bg">${visual ? `<img src="${fileUrl(visual)}">` : ''}</div>`;
   const html = `<!doctype html><html lang="${rtl ? 'ar' : 'en'}"><head><meta charset="utf-8"><style>${css}</style></head>
-<body><div class="stage">${bgHTML}<div class="scrim"></div>
+<body><div class="stage">${bgHTML}${brand.pattern?.type === 'seams' ? `<div class="pattern">${seamsSVG(vw, vh, brand.pattern.color || '#FFFFFF', u)}</div>` : ''}<div class="scrim"></div>
+${product ? `<div class="product"><img src="${fileUrl(product)}"></div>` : ''}
 <div class="copy"><h1>${words}</h1>${brief.subline ? `<p class="sub">${esc(brief.subline)}</p>` : ''}${brief.cta ? `<div class="cta">${esc(brief.cta)}</div>` : ''}</div>
 ${logoHTML(brand)}${distributorHTML(brand)}</div></body></html>`;
   return { html, vw, vh, layout };
 }
 
 // Motion timeline (seconds). Paused + scrubbed frame-by-frame by motion/animate.mjs.
-function motionCSS({ duration, ease, zoom, u, layout }) {
+function motionCSS({ duration, ease, zoom, u, layout, preset, rtl }) {
   const rise = 6 * u;
+  if (preset === 'energetic') return energeticCSS({ duration, zoom, u, layout, rtl });
   return `
 @keyframes kb{from{transform:scale(1)}to{transform:scale(${zoom})}}
 @keyframes scrimIn{from{opacity:0}to{opacity:1}}
@@ -194,6 +213,52 @@ h1 .w{animation:rise .7s ${ease} calc(.6s + var(--i) * .12s) both}
 .dist{animation:fade .8s ${ease} 3.2s both}
 .copy{animation:out .5s ease-in ${duration - 0.5}s both}
 `;
+}
+
+// Fast, punchy timeline for energy / youth brands (e.g. Dark Blue).
+// 0.0 bg + seams draw · 0.3 logo bite · 0.7 product slam · 1.3 headline whip · 2.2 sub · 2.8 CTA punch · 3.4 distributor
+function energeticCSS({ duration, zoom, u, layout, rtl }) {
+  const snap = 'cubic-bezier(.7,0,.2,1)';
+  const back = 'cubic-bezier(.34,1.56,.64,1)';
+  const dir = rtl ? 1 : -1;
+  const center = layout === 'portrait' ? 'translateX(-50%) ' : '';
+  return `
+@keyframes kb{from{transform:scale(${zoom})}to{transform:scale(1)}}
+@keyframes draw{from{stroke-dashoffset:1}to{stroke-dashoffset:0}}
+@keyframes scrimIn{from{opacity:0}to{opacity:1}}
+@keyframes bite{0%{opacity:0;transform:${center}scale(2.2) rotate(-12deg)}55%{opacity:1;transform:${center}scale(.92) rotate(2deg)}75%{transform:${center}scale(1.05)}100%{opacity:1;transform:${center}none}}
+@keyframes slam{0%{opacity:0;transform:translateY(${40 * u}px) rotate(${-8 * dir}deg) scale(.85)}60%{opacity:1;transform:translateY(${-2 * u}px) rotate(${1.5 * dir}deg) scale(1.03)}80%{transform:translateY(${0.6 * u}px) rotate(0) scale(.995)}100%{opacity:1;transform:none}}
+@keyframes float{0%,100%{transform:translateY(0)}50%{transform:translateY(${-1.2 * u}px)}}
+@keyframes whip{0%{opacity:0;transform:translateX(${18 * u * dir}px) skewX(${-14 * dir}deg)}70%{opacity:1;transform:translateX(${-1 * u * dir}px) skewX(${2 * dir}deg)}100%{opacity:1;transform:none}}
+@keyframes fade{from{opacity:0}to{opacity:1}}
+@keyframes punch{0%{opacity:0;transform:scale(.4)}65%{opacity:1;transform:scale(1.12)}100%{opacity:1;transform:scale(1)}}
+@keyframes flash{0%,100%{opacity:0}30%{opacity:.35}}
+@keyframes out{from{opacity:1}to{opacity:0}}
+.bg img,.bg{animation:kb ${duration}s cubic-bezier(.2,.6,.3,1) both}
+.pattern path{stroke-dasharray:1;animation:draw 1.4s ${snap} .1s both}
+.scrim{animation:scrimIn .4s ease-out 0s both}
+.logo{animation:bite .7s ${back} .3s both}
+.product{animation:slam .8s ${snap} .7s both}
+.product img{animation:float 3s ease-in-out 1.6s infinite}
+h1 .w{animation:whip .5s ${snap} calc(1.3s + var(--i) * .08s) both}
+.sub{animation:fade .5s ease-out 2.2s both}
+.cta{animation:punch .5s ${back} 2.8s both}
+.dist{animation:fade .6s ease-out 3.4s both}
+.stage::after{content:'';position:absolute;inset:0;background:#fff;pointer-events:none;animation:flash .25s ease-out .78s both}
+.copy{animation:out .4s ease-in ${duration - 0.4}s both}
+`;
+}
+
+// Basketball-seam line motif (from the Dark Blue cans): two big ellipse arcs + a vertical/horizontal curve.
+function seamsSVG(w, h, color, u) {
+  const sw = Math.max(1, 0.25 * u);
+  const paths = [
+    `M ${-w * 0.1} ${h * 0.15} C ${w * 0.25} ${h * 0.45}, ${w * 0.25} ${h * 0.55}, ${-w * 0.1} ${h * 0.95}`,
+    `M ${w * 1.1} ${h * 0.05} C ${w * 0.72} ${h * 0.4}, ${w * 0.72} ${h * 0.6}, ${w * 1.1} ${h * 0.95}`,
+    `M ${-w * 0.05} ${h * 0.5} C ${w * 0.3} ${h * 0.38}, ${w * 0.7} ${h * 0.62}, ${w * 1.05} ${h * 0.5}`,
+    `M ${w * 0.5} ${-h * 0.05} C ${w * 0.42} ${h * 0.3}, ${w * 0.58} ${h * 0.7}, ${w * 0.5} ${h * 1.05}`,
+  ];
+  return `<svg viewBox="0 0 ${w} ${h}" preserveAspectRatio="none">${paths.map((d) => `<path d="${d}" pathLength="1" fill="none" stroke="${color}" stroke-width="${sw}"/>`).join('')}</svg>`;
 }
 
 function hexA(hex, a) {

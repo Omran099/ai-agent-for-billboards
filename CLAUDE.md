@@ -11,6 +11,7 @@ Input: brand + design idea. Output: on-brand statics for every screen of that br
 - `screens.json` — this brand's actual screens (size, type, location, duration). Overrides `config/sizes.json`.
 - `sequence.json` — logo order / motion scene order for this brand
 - `assets/logos/`, `assets/products/`
+Brand research per brand: `docs/brands/<slug>.md` — read it before designing.
 `brands/leaders/` is the distributor; its logo is added to every brand per that brand's `policy.json`.
 Never start a campaign for a brand whose files still contain TODO values without telling the human.
 

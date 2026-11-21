@@ -1,13 +1,48 @@
 {
-  "_note": "TODO: كل القيم مؤقتة. منعبّيها من فولدر Leaders Billboards/Dark Blue (اللوغوهات، الألوان، الخطوط).",
+  "_source": "Logo + cans from Drive (Leaders Group/Dark Blue). Colors sampled from those files — confirm against the official guideline/Pantone when available.",
   "name": "Dark Blue",
   "wordmark": "DARK BLUE",
+  "maker": "Meridyen Gıda (Turkey)",
   "distributor": "leaders",
-  "logo": "assets/logos/logo.png",
-  "logo_on_dark": "assets/logos/logo-white.png",
-  "products_dir": "assets/products",
-  "colors": { "primary": "#06122B", "secondary": "#1E6BFF", "text_on_dark": "#FFFFFF", "text_on_light": "#06122B", "cta_bg": "#1E6BFF", "cta_text": "#FFFFFF" },
-  "fonts": { "headline": { "family": "Cairo", "weight": 900 }, "body": { "family": "Tajawal", "weight": 500 }, "cta": { "family": "Cairo", "weight": 800 } },
-  "rules": { "logo_height_u": 11, "safe_margin_u": 6, "max_headline_words": 7, "scrim_strength": 0.7 },
-  "motion": { "style": "TODO", "easing": "cubic-bezier(.2,.8,.2,1)", "ken_burns_zoom": 1.08 }
+  "logo": "assets/logos/logo-full.png",
+  "logo_on_dark": "assets/logos/logo-mark.png",
+  "products": {
+    "berry": "assets/products/can-berry.png",
+    "sugar-free": "assets/products/can-sugar-free.png"
+  },
+  "colors": {
+    "_note": "navy = logo file; deep = navy darkened for backgrounds; variant colors sampled from can photos",
+    "primary": "#0D0E33",
+    "navy": "#2A2A7C",
+    "secondary": "#2A2A7C",
+    "logo_ring": "#E4E4E4",
+    "silver": "#9C9CA8",
+    "racing_red": "#A73146",
+    "text_on_dark": "#FFFFFF",
+    "text_on_light": "#2A2A7C",
+    "cta_bg": "#FFFFFF",
+    "cta_text": "#2A2A7C",
+    "glow": "#3D5BFF"
+  },
+  "variants": {
+    "original":   { "color": "#2A2A7C", "note": "TODO: original can image not in Drive yet" },
+    "sugar-free": { "color": "#1F7EAB", "accent": "#A73146", "copy_en": "SUGAR FREE" },
+    "berry":      { "color": "#832551", "copy_en": "Ready to Drink · Energy Drink Mocktail" },
+    "mango":      { "color": "TODO", "note": "mocktail line — can image needed" },
+    "mojito":     { "color": "TODO", "note": "mocktail line (mint + lemon) — can image needed" }
+  },
+  "fonts": {
+    "_note": "Logo wordmark is a heavy condensed sans — never retype it, always use the logo file. Arabic copy: Cairo Black / Tajawal.",
+    "headline": { "family": "Cairo", "weight": 900 },
+    "body": { "family": "Tajawal", "weight": 500 },
+    "cta": { "family": "Cairo", "weight": 800 }
+  },
+  "pattern": { "type": "seams", "color": "#FFFFFF", "opacity": 0.18 },
+  "rules": { "logo_height_u": 16, "safe_margin_u": 6, "max_headline_words": 6, "scrim_strength": 0.55 },
+  "motion": {
+    "preset": "energetic",
+    "style": "fast, punchy, predatory — the shark bites in, the can slams in, copy whips across. Short holds, snappy easing, one white flash on product impact.",
+    "easing": "cubic-bezier(.7,0,.2,1)",
+    "ken_burns_zoom": 1.12
+  }
 }

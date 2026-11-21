@@ -1,9 +1,22 @@
 {
-  "_note": "TODO: بوليسي دارك بلو الحقيقية. هاي البنية بس.",
-  "required_logos": ["brand", "distributor"],
-  "distributor_logo": { "required": true, "label": "Distributed by", "height_u": 6, "position": "bottom-opposite" },
+  "_note": "Defaults from research — confirm with Leaders. See docs/brands/dark-blue.md",
+  "required_logos": [
+    "brand",
+    "distributor"
+  ],
+  "distributor_logo": {
+    "required": true,
+    "label": "Distributed by",
+    "height_u": 6,
+    "position": "bottom, copy side"
+  },
   "required_text": [],
-  "forbidden": ["AI-generated text or logos", "altered logo colors", "logo smaller than rules.logo_height_u"],
+  "forbidden": [
+    "AI-generated text, logos or cans",
+    "retyping or recoloring the DARK BLUE wordmark",
+    "navy wordmark on navy background (use logo-mark on dark)",
+    "more than one flavor per execution"
+  ],
   "product_shot_required": true,
   "min_duration_s": null
 }

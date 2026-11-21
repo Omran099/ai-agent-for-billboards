@@ -1,0 +1,13 @@
+{
+  "campaign": "Identity_Test",
+  "brand": "dark-blue",
+  "direction": "rtl",
+  "headline": "طاقة ما بتوقف",
+  "subline": "دارك بلو بيري — موكتيل طاقة جاهز للشرب",
+  "cta": "جرّبها هلق",
+  "product": "assets/products/can-berry.png",
+  "_product_note": "path inside brands/<slug>/ — one flavor per execution",
+  "visual": null,
+  "focal_point": [0.3, 0.5],
+  "sizes": "all"
+}
