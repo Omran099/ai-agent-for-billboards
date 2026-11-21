@@ -1,0 +1,31 @@
+{
+  "_note": "TODO: استبدل القيم بالـ Brand Guidelines الرسمية لليدرز. هاي قيم مؤقتة للتجربة.",
+  "name": "Leaders",
+  "wordmark": "LEADERS",
+  "logo": "assets/logo.png",
+  "logo_on_dark": "assets/logo-white.png",
+  "colors": {
+    "primary": "#0B2A4A",
+    "secondary": "#F2B705",
+    "text_on_dark": "#FFFFFF",
+    "text_on_light": "#0B2A4A",
+    "cta_bg": "#F2B705",
+    "cta_text": "#0B2A4A"
+  },
+  "fonts": {
+    "headline": { "family": "Cairo", "weight": 900 },
+    "body": { "family": "Tajawal", "weight": 500 },
+    "cta": { "family": "Cairo", "weight": 800 }
+  },
+  "rules": {
+    "logo_height_u": 10,
+    "safe_margin_u": 6,
+    "max_headline_words": 8,
+    "scrim_strength": 0.75
+  },
+  "motion": {
+    "style": "confident, clean, premium",
+    "easing": "cubic-bezier(.2,.8,.2,1)",
+    "ken_burns_zoom": 1.08
+  }
+}

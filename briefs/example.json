@@ -1,0 +1,13 @@
+{
+  "campaign": "Demo_Launch",
+  "brand": "leaders",
+  "direction": "rtl",
+  "headline": "القيادة تبدأ من هنا",
+  "subline": "اكتشف المجموعة الجديدة في كل الفروع",
+  "cta": "زورونا اليوم",
+  "visual": null,
+  "visual_video": null,
+  "focal_point": [0.3, 0.5],
+  "visual_prompt": "Premium cinematic key visual for Leaders brand, dramatic lighting, empty negative space on the right side for text, no text, no letters, no logos",
+  "sizes": "all"
+}

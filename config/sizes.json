@@ -1,0 +1,13 @@
+{
+  "_note": "عدّل هاللستة حسب قياسات ليدرز الحقيقية. type=print للطباعة (بالمتر) و type=digital للشاشات (بالبكسل).",
+  "print_px_per_meter": 600,
+  "sizes": [
+    { "id": "BB_12x4m",      "type": "print",   "width_m": 12,  "height_m": 4,   "label": "Billboard 12x4m" },
+    { "id": "BB_6x3m",       "type": "print",   "width_m": 6,   "height_m": 3,   "label": "Billboard 6x3m" },
+    { "id": "UNIPOLE_4x3m",  "type": "print",   "width_m": 4,   "height_m": 3,   "label": "Unipole 4x3m" },
+    { "id": "MUPI_1.2x1.8m", "type": "print",   "width_m": 1.2, "height_m": 1.8, "px_per_meter": 2000, "label": "Mupi / Street furniture" },
+    { "id": "LED_1920x1080", "type": "digital", "width_px": 1920, "height_px": 1080, "fps": 25, "duration_s": 10, "label": "LED Landscape FHD" },
+    { "id": "LED_1080x1920", "type": "digital", "width_px": 1080, "height_px": 1920, "fps": 25, "duration_s": 10, "label": "LED Portrait FHD" },
+    { "id": "LED_3840x1280", "type": "digital", "width_px": 3840, "height_px": 1280, "fps": 25, "duration_s": 10, "label": "LED Ultra-wide 3:1" }
+  ]
+}
