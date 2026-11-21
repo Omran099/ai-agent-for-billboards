@@ -2,3 +2,7 @@ node_modules/
 output/
 *.log
 .DS_Store
+*.zip
+*.bundle
+/*.png
+/*.mp4
